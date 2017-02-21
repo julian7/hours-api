@@ -43,6 +43,8 @@ func main() {
 	apirouter := router.PathPrefix("/api").Subrouter()
 	apirouter.HandleFunc("/clients", env.AllClients)
 	apirouter.HandleFunc("/clients/{id:[0-9]+}", env.GetClient)
+	apirouter.HandleFunc("/projects", env.AllProjects)
+	apirouter.HandleFunc("/projects/{id:[0-9]+}", env.GetProject)
 
 	httpServer := manners.NewServer()
 	httpServer.Addr = *httpAddr
