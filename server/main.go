@@ -42,6 +42,7 @@ func main() {
 	router := mux.NewRouter()
 	apirouter := router.PathPrefix("/api").Subrouter()
 	apirouter.HandleFunc("/clients", env.AllClients)
+	apirouter.HandleFunc("/clients/{id:[0-9]+}", env.GetClient)
 
 	httpServer := manners.NewServer()
 	httpServer.Addr = *httpAddr

@@ -36,3 +36,19 @@ func AllClients(conn *sql.DB) ([]*Client, error) {
 	}
 	return results, nil
 }
+
+// FetchClient returns a single object found by ID
+func FetchClient(conn *sql.DB, id int) (*Client, error) {
+	rows, err := conn.Query("SELECT * FROM clients WHERE id=$1 LIMIT 1", id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	rows.Next()
+	item, err := getClient(rows)
+	if err != nil {
+		return nil, err
+	}
+
+	return item, nil
+}
