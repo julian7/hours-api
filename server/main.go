@@ -14,6 +14,7 @@ import (
 	"github.com/kelseyhightower/app/health"
 
 	"github.com/julian7/hours-api/handlers"
+	"github.com/julian7/hours-api/models"
 )
 
 const version = "1.0.0"
@@ -21,16 +22,26 @@ const version = "1.0.0"
 func main() {
 	var (
 		httpAddr = flag.String("http", "0.0.0.0:4000", "HTTP service address.")
+		sqlURL   = flag.String("db", "nodb://", "Database URL connect string.")
 	)
 	flag.Parse()
 
 	log.Println("Starting server...")
 	log.Printf("HTTP service listening on %s", *httpAddr)
+	log.Printf("Database connects to %s", *sqlURL)
 
 	errChan := make(chan error, 10)
 
+	conn, err := models.InitDB(*sqlURL)
+	if err != nil {
+		log.Panic(err)
+	}
+
+	env := &handlers.Env{Conn: conn}
+
 	router := mux.NewRouter()
 	apirouter := router.PathPrefix("/api").Subrouter()
+	apirouter.HandleFunc("/clients", env.AllClients)
 
 	httpServer := manners.NewServer()
 	httpServer.Addr = *httpAddr
